@@ -175,7 +175,8 @@ async def mjpeg_handler(request):
         await response.write(data)
         await response.write(b"\r\n")
 
-        if (counter == 10)
+        if (counter == 10):
+            counter = 0
             os.system("pkill fbi") # test each 100ms if fbi is done
             await asyncio.sleep(0.2) # this means that the maximum FPS is 5
             os.system("fbi -d /dev/fb0 -T 1 -noverbose -a ./images/frame.jpg") # Runs fbi for item.time seconds
