@@ -4,7 +4,7 @@ if [ "$INITSYSTEM" != "on" ]; then
     echo "configuring SSH ..."
     mkdir /var/run/sshd \
         && echo 'root:resin' | chpasswd \
-        && sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/' /etc/ssh/sshd_config \
+        && sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config \
         && sed -i 's/UsePAM yes/UsePAM no/' /etc/ssh/sshd_config
 
     echo "starting SSH ..."
