@@ -48,7 +48,7 @@ class CameraDevice():
         frame, encimg = cv2.imencode('.jpg', frame, encode_param)
 
         if(os.path.exists("./images/frame.jpg") == False):
-            await cv2.imwrite("./images/frame.jpg", encimg)
+            encimg.tofile("./images/frame.jpg")
 
         return encimg.tostring()
 
