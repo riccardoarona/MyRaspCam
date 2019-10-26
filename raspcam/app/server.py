@@ -5,6 +5,7 @@ from av import VideoFrame
 from aiortc import RTCPeerConnection, RTCSessionDescription, VideoStreamTrack, RTCIceServer, RTCConfiguration
 from aiohttp_basicauth import BasicAuthMiddleware
 from sense_hat import SenseHat
+import threading
 
 A = [0, 0, 0]
 B = [0, 0, 0]
@@ -22,6 +23,18 @@ display_status = [
     D, C, C, C, C, C, C, D,
     D, D, D, D, D, D, D, D
 ]
+
+class HDMIThread(object):
+    def __init__(self):
+        pass
+
+    def start_thread(self):
+        self.mgmt_thread = threading.Thread(target = self.thread_core)
+        self.mgmt_thread.start()    
+
+    def thread_core(self):
+        os.system("/bin/bash ./update_HDMI.sh")
+        sleep(1)
 
 class CameraDevice():
     def __init__(self):
@@ -46,8 +59,7 @@ class CameraDevice():
         encode_param = (int(cv2.IMWRITE_JPEG_QUALITY), 90)
         frame = await self.get_latest_frame()
         frame, encimg = cv2.imencode('.jpg', frame, encode_param)
-
-        await encimg.tofile("frame.jpg")
+        encimg.tofile("./images/frame.jpg")
         return encimg.tostring()
 
 class PeerConnectionFactory():
@@ -164,10 +176,6 @@ async def mjpeg_handler(request):
 
         await asyncio.sleep(0.2) # this means that the maximum FPS is 5
 
-        await os.system("pkill fbi >> ./images/log.txt") # test each 100ms if fbi is done
-        await os.system("fbi -d /dev/fb0 -T 1 -noverbose -a ./frame.jpg >> ./images/log.txt") # Runs fbi for item.time seconds
-        await os.system("rm -rf ./frame.jpg >> ./images/log.txt")
-
         # Prepare HTML response
         await response.write('--{}\r\n'.format(boundary).encode('utf-8'))
         await response.write(b'Content-Type: image/jpeg\r\n')
@@ -209,6 +217,13 @@ if __name__ == '__main__':
     pcs = set()
     camera_device = CameraDevice()
 
+    print("create log file")
+    os.system("echo \"log\" > ./images/log.txt") # test each 100ms if fbi is done
+
+    print("start thread")
+    hdmi_thd = HDMIThread()
+    hdmi_thd.start_thread()
+
     flip = False
     try:
         if os.environ['rotation'] == '1':
@@ -230,9 +245,6 @@ if __name__ == '__main__':
         print('Set the username and password environment variables \nto enable authorization.')
         print('For more info visit: \nhttps://github.com/balena-io-playground/balena-cam')
         print('#############################################################\n')
-
-    print("create log file")
-    os.system("echo \"log\" > ./images/log.txt") # test each 100ms if fbi is done
     
     # Factory to create peerConnections depending on the iceServers set by user
     pc_factory = PeerConnectionFactory()
@@ -249,3 +261,4 @@ if __name__ == '__main__':
     app.router.add_get('/mjpeg', mjpeg_handler)
     app.router.add_get('/ice-config', config)
     web.run_app(app, port=80)
+
