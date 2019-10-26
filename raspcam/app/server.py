@@ -155,14 +155,24 @@ async def mjpeg_handler(request):
     })
     await response.prepare(request)
     while True:
+
+        # Grab image from camera
         data = await camera_device.get_jpeg_frame()
-        await asyncio.sleep(0.05) # this means that the maximum FPS is 5
+        await asyncio.sleep(0.2) # this means that the maximum FPS is 5
+
+        # Prepare HTML response
         await response.write('--{}\r\n'.format(boundary).encode('utf-8'))
         await response.write(b'Content-Type: image/jpeg\r\n')
         await response.write('Content-Length: {}\r\n'.format(len(data)).encode('utf-8'))
         await response.write(b"\r\n")
         await response.write(data)
         await response.write(b"\r\n")
+
+        # Display image over HDMI screen
+        if data.isImage
+            system("fbi -T 1 -1 -t #{data.time} #{data.filename}") # Runs fbi for item.time seconds
+            system("killall -9 fbi") # test each 100ms if fbi is done
+        end        
     return response
 
 async def config(request):
