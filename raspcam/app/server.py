@@ -28,7 +28,6 @@ class CameraDevice():
         self.cap = cv2.VideoCapture(0)
         self.cap.set(3, 800)
         self.cap.set(4, 600)
-        self.first_time = True
 
     def rotate(self, frame):
         if flip:
@@ -47,18 +46,9 @@ class CameraDevice():
         encode_param = (int(cv2.IMWRITE_JPEG_QUALITY), 90)
         frame = await self.get_latest_frame()
         frame, encimg = cv2.imencode('.jpg', frame, encode_param)
-        if (os.path.exists("./images") == False):
-            if(self.first_time):
-                self.first_time = False
-                print ("folder <%s> not found!", "./images")
-        else:
-            if(os.path.exists("./images/frame.jpg") == False):
-                try:
-                    cv2.imwrite("./images/frame.jpg", encimg)
-                except Exception as exc:
-                    if(self.first_time):
-                        self.first_time = False
-                        print ("error saving frame. exception<%s>", exc)
+
+        if(os.path.exists("./images/frame.jpg") == False):
+            cv2.imwrite("./images/frame.jpg", encimg)
 
         return encimg.tostring()
 
@@ -168,7 +158,11 @@ async def mjpeg_handler(request):
                         'boundary=--%s' % boundary,
     })
     await response.prepare(request)
+
+    counter = 0
     while True:
+
+        counter = counter + 1
 
         # Grab image from camera
         data = await camera_device.get_jpeg_frame()
@@ -181,10 +175,11 @@ async def mjpeg_handler(request):
         await response.write(data)
         await response.write(b"\r\n")
 
-        os.system("fbi -d /dev/fb0 -T 1 -noverbose -a ./images/frame.jpg") # Runs fbi for item.time seconds
-        await asyncio.sleep(0.2) # this means that the maximum FPS is 5
-        os.system("pkill fbi") # test each 100ms if fbi is done
-        os.remove("./images/frame.jpg")
+        if (counter == 10)
+            os.system("pkill fbi") # test each 100ms if fbi is done
+            await asyncio.sleep(0.2) # this means that the maximum FPS is 5
+            os.system("fbi -d /dev/fb0 -T 1 -noverbose -a ./images/frame.jpg") # Runs fbi for item.time seconds
+            os.remove("./images/frame.jpg")
 
     return response
 
