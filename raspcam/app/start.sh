@@ -8,7 +8,8 @@ echo "rendering image"
 # cat /usr/src/app/images/image.raw > /dev/fb1
 fbi -d /dev/fb0 -T 1 -noverbose -a ./client/favicon.png
 
-sleep 999
+echo "waiting 1 second"
+sleep 1
 
 # Notifying service start
 echo "starting service ..."

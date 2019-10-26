@@ -4,6 +4,24 @@ from aiohttp import web
 from av import VideoFrame
 from aiortc import RTCPeerConnection, RTCSessionDescription, VideoStreamTrack, RTCIceServer, RTCConfiguration
 from aiohttp_basicauth import BasicAuthMiddleware
+from sense_hat import SenseHat
+
+A = [0, 0, 0]
+B = [0, 0, 0]
+C = [0, 0, 0]
+D = [0, 0, 0]
+
+# Display spento
+display_status = [
+    D, D, D, D, D, D, D, D,
+    D, C, C, C, C, C, C, D,
+    D, C, B, B, B, B, C, D,
+    D, C, B, A, A, B, C, D,
+    D, C, B, A, A, B, C, D,
+    D, C, B, B, B, B, C, D,
+    D, C, C, C, C, C, C, D,
+    D, D, D, D, D, D, D, D
+]
 
 class CameraDevice():
     def __init__(self):
@@ -138,12 +156,10 @@ async def mjpeg_handler(request):
     await response.prepare(request)
     while True:
         data = await camera_device.get_jpeg_frame()
-        await asyncio.sleep(0.2) # this means that the maximum FPS is 5
-        await response.write(
-            '--{}\r\n'.format(boundary).encode('utf-8'))
+        await asyncio.sleep(0.05) # this means that the maximum FPS is 5
+        await response.write('--{}\r\n'.format(boundary).encode('utf-8'))
         await response.write(b'Content-Type: image/jpeg\r\n')
-        await response.write('Content-Length: {}\r\n'.format(
-                len(data)).encode('utf-8'))
+        await response.write('Content-Length: {}\r\n'.format(len(data)).encode('utf-8'))
         await response.write(b"\r\n")
         await response.write(data)
         await response.write(b"\r\n")
@@ -171,6 +187,9 @@ def checkDeviceReadiness():
         print('Video device is ready')
 
 if __name__ == '__main__':
+
+    sense = SenseHat()
+    sense.set_pixels(display_status)
     checkDeviceReadiness()
 
     ROOT = os.path.dirname(__file__)
