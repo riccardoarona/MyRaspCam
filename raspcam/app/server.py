@@ -52,14 +52,13 @@ class CameraDevice():
                 self.first_time = False
                 print ("folder <%s> not found!", "./images")
         else:
-            if(os.path.exists("./images/frame.jpg")):
-                os.remove("./images/frame.jpg")
-            try:
-                cv2.imwrite("./images/frame.jpg", encimg)
-            except Exception as exc:
-                if(self.first_time):
-                    self.first_time = False
-                    print ("error saving frame. exception<%s>", exc)
+            if(os.path.exists("./images/frame.jpg") == False):
+                try:
+                    cv2.imwrite("./images/frame.jpg", encimg)
+                except Exception as exc:
+                    if(self.first_time):
+                        self.first_time = False
+                        print ("error saving frame. exception<%s>", exc)
 
         return encimg.tostring()
 
@@ -173,7 +172,6 @@ async def mjpeg_handler(request):
 
         # Grab image from camera
         data = await camera_device.get_jpeg_frame()
-        await asyncio.sleep(0.2) # this means that the maximum FPS is 5
 
         # Prepare HTML response
         await response.write('--{}\r\n'.format(boundary).encode('utf-8'))
@@ -183,9 +181,10 @@ async def mjpeg_handler(request):
         await response.write(data)
         await response.write(b"\r\n")
 
-        if os.path.exists("./images"):
-            os.system("fbi -d /dev/fb0 -T 1 -noverbose ./images/frame.jpg") # Runs fbi for item.time seconds
-            os.system("pkill fbi") # test each 100ms if fbi is done
+        os.system("fbi -d /dev/fb0 -T 1 -noverbose -a ./images/frame.jpg") # Runs fbi for item.time seconds
+        await asyncio.sleep(0.2) # this means that the maximum FPS is 5
+        os.system("pkill fbi") # test each 100ms if fbi is done
+        os.remove("./images/frame.jpg")
 
     return response
 
