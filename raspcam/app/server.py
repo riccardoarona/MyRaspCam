@@ -28,6 +28,7 @@ class CameraDevice():
         self.cap = cv2.VideoCapture(0)
         self.cap.set(3, 640)
         self.cap.set(4, 480)
+        self.first_time = True
 
     def rotate(self, frame):
         if flip:
@@ -46,7 +47,13 @@ class CameraDevice():
         encode_param = (int(cv2.IMWRITE_JPEG_QUALITY), 90)
         frame = await self.get_latest_frame()
         frame, encimg = cv2.imencode('.jpg', frame, encode_param)
-        cv2.imwrite("./images/frame.jpg", frame)
+        if (self.first_time and not os.path.exists("./images")):
+            print ("folder <%s> not found!", "./images")
+            self.first_time = False
+        else:
+            if(os.path.exists("./images/frame.jpg")):
+                os.remove("./images/frame.jpg")
+            cv2.imwrite("./images/frame.jpg", frame)
         return encimg.tostring()
 
 class PeerConnectionFactory():
@@ -169,9 +176,9 @@ async def mjpeg_handler(request):
         await response.write(data)
         await response.write(b"\r\n")
 
-        # Display image over HDMI screen
-        os.system("fbi -d /dev/fb0 -T 1 -noverbose ./images/frame.jpg") # Runs fbi for item.time seconds
-        os.system("killall -9 fbi") # test each 100ms if fbi is done
+        if os.path.exists("./images"):
+            os.system("fbi -d /dev/fb0 -T 1 -noverbose ./images/frame.jpg") # Runs fbi for item.time seconds
+            os.system("killall -9 fbi") # test each 100ms if fbi is done
 
     return response
 
