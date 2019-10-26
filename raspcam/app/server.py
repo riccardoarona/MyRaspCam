@@ -33,8 +33,9 @@ class HDMIThread(object):
         self.mgmt_thread.start()    
 
     def thread_core(self):
-        os.system("/bin/bash ./update_HDMI.sh")
-        sleep(1)
+        while True:
+            os.system("/bin/bash ./update_HDMI.sh")
+            sleep(1)
 
 class CameraDevice():
     def __init__(self):
@@ -59,7 +60,7 @@ class CameraDevice():
         encode_param = (int(cv2.IMWRITE_JPEG_QUALITY), 90)
         frame = await self.get_latest_frame()
         frame, encimg = cv2.imencode('.jpg', frame, encode_param)
-        encimg.tofile("./images/frame.jpg")
+        encimg.tofile("/usr/src/app/images/frame.jpg")
         return encimg.tostring()
 
 class PeerConnectionFactory():

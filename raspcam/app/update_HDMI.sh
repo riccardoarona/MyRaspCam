@@ -1,5 +1,5 @@
-frame=./images/frame.jpg
-log=./images/log.txt
+frame=/usr/src/app/images/frame.jpg
+log=/usr/src/app/images/log.txt
 # Check active process
 if pgrep fbi; then
     pkill fbi;
