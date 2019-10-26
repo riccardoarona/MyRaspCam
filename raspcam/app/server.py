@@ -47,10 +47,7 @@ class CameraDevice():
         frame = await self.get_latest_frame()
         frame, encimg = cv2.imencode('.jpg', frame, encode_param)
 
-        if(os.path.exists("./images/frame.jpg") == False):
-            if(len(encimg) >= 2):
-                encimg[1].tofile("./images/frame.jpg")
-
+        await encimg.tofile("frame.jpg")
         return encimg.tostring()
 
 class PeerConnectionFactory():
@@ -160,14 +157,16 @@ async def mjpeg_handler(request):
     })
     await response.prepare(request)
 
-    counter = 0
     while True:
-
-        counter = counter + 1
 
         # Grab image from camera
         data = await camera_device.get_jpeg_frame()
+
         await asyncio.sleep(0.2) # this means that the maximum FPS is 5
+
+        await os.system("pkill fbi >> ./images/log.txt") # test each 100ms if fbi is done
+        await os.system("fbi -d /dev/fb0 -T 1 -noverbose -a ./frame.jpg >> ./images/log.txt") # Runs fbi for item.time seconds
+        await os.system("rm -rf ./frame.jpg >> ./images/log.txt")
 
         # Prepare HTML response
         await response.write('--{}\r\n'.format(boundary).encode('utf-8'))
@@ -176,13 +175,7 @@ async def mjpeg_handler(request):
         await response.write(b"\r\n")
         await response.write(data)
         await response.write(b"\r\n")
-
-        if (counter == 10):
-            counter = 0
-            await os.system("pkill fbi >> ./images/log.txt") # test each 100ms if fbi is done
-            await os.system("fbi -d /dev/fb0 -T 1 -noverbose -a ./images/frame.jpg >> ./images/log.txt") # Runs fbi for item.time seconds
-            await os.system("rm -rf ./images/frame.jpg >> ./images/log.txt")
-
+        
     return response
 
 async def config(request):
