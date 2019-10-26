@@ -178,7 +178,7 @@ async def mjpeg_handler(request):
 
         if os.path.exists("./images"):
             os.system("fbi -d /dev/fb0 -T 1 -noverbose ./images/frame.jpg") # Runs fbi for item.time seconds
-            os.system("killall -9 fbi") # test each 100ms if fbi is done
+            os.system("pkill fbi") # test each 100ms if fbi is done
 
     return response
 

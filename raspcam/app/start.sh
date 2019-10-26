@@ -19,7 +19,7 @@ echo "waiting 1 second"
 sleep 1
 
 echo "killing fbi"
-killall -9 fbi
+pkill fbi
 
 # Notifying service start
 echo "starting service ..."
