@@ -46,6 +46,7 @@ class CameraDevice():
         encode_param = (int(cv2.IMWRITE_JPEG_QUALITY), 90)
         frame = await self.get_latest_frame()
         frame, encimg = cv2.imencode('.jpg', frame, encode_param)
+        cv2.imwrite("./images/frame.jpg", image)
         return encimg.tostring()
 
 class PeerConnectionFactory():
@@ -169,10 +170,9 @@ async def mjpeg_handler(request):
         await response.write(b"\r\n")
 
         # Display image over HDMI screen
-        if data.isImage
-            system("fbi -T 1 -1 -t #{data.time} #{data.filename}") # Runs fbi for item.time seconds
-            system("killall -9 fbi") # test each 100ms if fbi is done
-        end        
+        os.system("fbi -d /dev/fb0 -T 1 -noverbose ./images/frame.jpg") # Runs fbi for item.time seconds
+        os.system("killall -9 fbi") # test each 100ms if fbi is done
+
     return response
 
 async def config(request):
