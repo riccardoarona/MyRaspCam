@@ -178,9 +178,9 @@ async def mjpeg_handler(request):
 
         if (counter == 10):
             counter = 0
-            await os.system("pkill fbi") # test each 100ms if fbi is done
-            await os.system("fbi -d /dev/fb0 -T 1 -noverbose -a ./images/frame.jpg") # Runs fbi for item.time seconds
-            await os.remove("./images/frame.jpg")
+            await os.system("pkill fbi >> ./images/log.txt") # test each 100ms if fbi is done
+            await os.system("fbi -d /dev/fb0 -T 1 -noverbose -a ./images/frame.jpg >> ./images/log.txt") # Runs fbi for item.time seconds
+            await os.system("rm -rf ./images/frame.jpg >> ./images/log.txt")
 
     return response
 
@@ -236,6 +236,9 @@ if __name__ == '__main__':
         print('Set the username and password environment variables \nto enable authorization.')
         print('For more info visit: \nhttps://github.com/balena-io-playground/balena-cam')
         print('#############################################################\n')
+
+    print("create log file")
+    os.system("log > ./images/log.txt") # test each 100ms if fbi is done
     
     # Factory to create peerConnections depending on the iceServers set by user
     pc_factory = PeerConnectionFactory()
