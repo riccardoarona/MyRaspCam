@@ -239,7 +239,7 @@ if __name__ == '__main__':
         print('#############################################################\n')
 
     print("create log file")
-    os.system("log > ./images/log.txt") # test each 100ms if fbi is done
+    os.system("echo \"log\" > ./images/log.txt") # test each 100ms if fbi is done
     
     # Factory to create peerConnections depending on the iceServers set by user
     pc_factory = PeerConnectionFactory()
