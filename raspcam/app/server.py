@@ -48,7 +48,7 @@ class CameraDevice():
         frame, encimg = cv2.imencode('.jpg', frame, encode_param)
 
         if(os.path.exists("./images/frame.jpg") == False):
-            cv2.imwrite("./images/frame.jpg", encimg)
+            await cv2.imwrite("./images/frame.jpg", encimg)
 
         return encimg.tostring()
 
@@ -166,6 +166,7 @@ async def mjpeg_handler(request):
 
         # Grab image from camera
         data = await camera_device.get_jpeg_frame()
+        await asyncio.sleep(0.2) # this means that the maximum FPS is 5
 
         # Prepare HTML response
         await response.write('--{}\r\n'.format(boundary).encode('utf-8'))
@@ -177,10 +178,9 @@ async def mjpeg_handler(request):
 
         if (counter == 10):
             counter = 0
-            os.system("pkill fbi") # test each 100ms if fbi is done
-            await asyncio.sleep(0.2) # this means that the maximum FPS is 5
-            os.system("fbi -d /dev/fb0 -T 1 -noverbose -a ./images/frame.jpg") # Runs fbi for item.time seconds
-            os.remove("./images/frame.jpg")
+            await os.system("pkill fbi") # test each 100ms if fbi is done
+            await os.system("fbi -d /dev/fb0 -T 1 -noverbose -a ./images/frame.jpg") # Runs fbi for item.time seconds
+            await os.remove("./images/frame.jpg")
 
     return response
 
