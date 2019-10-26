@@ -26,8 +26,8 @@ display_status = [
 class CameraDevice():
     def __init__(self):
         self.cap = cv2.VideoCapture(0)
-        self.cap.set(3, 640)
-        self.cap.set(4, 480)
+        self.cap.set(3, 800)
+        self.cap.set(4, 600)
         self.first_time = True
 
     def rotate(self, frame):
@@ -47,13 +47,20 @@ class CameraDevice():
         encode_param = (int(cv2.IMWRITE_JPEG_QUALITY), 90)
         frame = await self.get_latest_frame()
         frame, encimg = cv2.imencode('.jpg', frame, encode_param)
-        if (self.first_time and not os.path.exists("./images")):
-            print ("folder <%s> not found!", "./images")
-            self.first_time = False
+        if (os.path.exists("./images") == False):
+            if(self.first_time):
+                self.first_time = False
+                print ("folder <%s> not found!", "./images")
         else:
             if(os.path.exists("./images/frame.jpg")):
                 os.remove("./images/frame.jpg")
-            cv2.imwrite("./images/frame.jpg", frame)
+            try:
+                cv2.imwrite("./images/frame.jpg", encimg)
+            except Exception as exc:
+                if(self.first_time):
+                    self.first_time = False
+                    print ("error saving frame. exception<%s>", exc)
+
         return encimg.tostring()
 
 class PeerConnectionFactory():
