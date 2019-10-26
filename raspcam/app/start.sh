@@ -13,7 +13,7 @@ fi
 
 echo "rendering image"
 # cat /usr/src/app/images/image.raw > /dev/fb1
-fbi -d /dev/fb0 -T 1 -noverbose -a ./images/raspberry-pi-logo.jpg
+fbi -d /dev/fb0 -T 1 -noverbose -a ./images/raspberry-pi-logo.png
 
 echo "waiting 1 second"
 sleep 1
