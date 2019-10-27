@@ -57,11 +57,14 @@ class CameraDevice():
         return self.rotate(frame)
 
     async def get_jpeg_frame(self):
+        log = open("/usr/src/app/images/log.txt", "a")
         encode_param = (int(cv2.IMWRITE_JPEG_QUALITY), 95)
         frame = await self.get_latest_frame()
-        frame, encimg = cv2.imencode('.jpg', frame, encode_param)
+        ret, encimg = cv2.imencode('.jpg', frame, encode_param)
+        log.write(" *** ret encode : <%s>" % ret)
         ret = await cv2.imwrite("frame.jpg", encimg)
-        print("ret : <%s>" % ret)
+        log.write(" *** ret write  : <%s>" % ret)
+        log.close()
         return encimg.tostring()
 
 class PeerConnectionFactory():
