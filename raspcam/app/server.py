@@ -24,6 +24,8 @@ display_status = [
     D, D, D, D, D, D, D, D
 ]
 
+frame_ready = False
+
 class CameraDevice():
     def __init__(self):
         self.cap = cv2.VideoCapture(0)
@@ -61,6 +63,8 @@ class HDMIThread(object):
 
     def thread_core(self):
         while True:
+            while(frame_ready == False):
+                sleep(0.1)
             os.system("/bin/bash ./update_HDMI.sh")
             sleep(10)
 
@@ -108,8 +112,10 @@ class RTCVideoStream(VideoStreamTrack):
         self.data_bgr = None
 
     async def recv(self):
+        frame_ready = False
         self.data_bgr = await self.camera_device.get_latest_frame()
         cv2.imwrite("frame.jpg", self.data_bgr)
+        frame_ready = True
         frame = VideoFrame.from_ndarray(self.data_bgr, format='bgr24')
         pts, time_base = await self.next_timestamp()
         frame.pts = pts
