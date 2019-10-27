@@ -61,9 +61,13 @@ class HDMIThread(object):
 
     def thread_core(self):
         while True:
-            self.data_bgr = self.camera_device.get_latest_frame()
-            if (cv2.imwrite("frame.jpg", self.data_bgr)):
-                os.system("/bin/bash ./update_HDMI.sh")
+            try:
+                self.data_bgr = self.camera_device.get_latest_frame()
+                if (self.data_bgr is not None):
+                    if (cv2.imwrite("frame.jpg", self.data_bgr)):
+                        os.system("/bin/bash ./update_HDMI.sh")
+            except Exception as exc:
+                print("Exception:<%s>" % exc)
             sleep(10)
 
 class PeerConnectionFactory():
