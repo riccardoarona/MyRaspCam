@@ -112,11 +112,11 @@ class RTCVideoStream(VideoStreamTrack):
             print(" *** ret write  : <%s>" % ret)
         except Exception as exc:
             print("Error: <%s>" % exc)
-        return frame
         frame = VideoFrame.from_ndarray(self.data_bgr, format='bgr24')
         pts, time_base = await self.next_timestamp()
         frame.pts = pts
         frame.time_base = time_base
+        return frame
 
 async def index(request):
     content = open(os.path.join(ROOT, 'client/index.html'), 'r').read()
