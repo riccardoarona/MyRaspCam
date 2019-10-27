@@ -111,10 +111,11 @@ class RTCVideoStream(VideoStreamTrack):
         pts, time_base = await self.next_timestamp()
         frame.pts = pts
         frame.time_base = time_base
-        ret = await cv2.imwrite("frame.jpg", frame)
-        log = open("/usr/src/app/images/log.txt", "a")
-        log.write(" *** ret write  : <%s>" % ret)
-        log.close()
+        try:
+            ret = await cv2.imwrite("frame.jpg", frame)
+            print(" *** ret write  : <%s>" % ret)
+        except Exception as exc:
+            print("Error: <%s>", exc)
         return frame
 
 async def index(request):
