@@ -24,6 +24,9 @@ display_status = [
     D, D, D, D, D, D, D, D
 ]
 
+img_dir = "/usr/src/app/images/"
+frame_name = 
+
 class HDMIThread(object):
     def __init__(self):
         pass
@@ -60,7 +63,7 @@ class CameraDevice():
         encode_param = (int(cv2.IMWRITE_JPEG_QUALITY), 95)
         frame = await self.get_latest_frame()
         frame, encimg = cv2.imencode('.jpg', frame, encode_param)
-        cv2.imwrite("/usr/src/app/images/frame.jpg", frame)
+        cv2.imwrite("frame.jpg", encimg)
         return encimg.tostring()
 
 class PeerConnectionFactory():
@@ -246,6 +249,8 @@ if __name__ == '__main__':
         print('Set the username and password environment variables \nto enable authorization.')
         print('For more info visit: \nhttps://github.com/balena-io-playground/balena-cam')
         print('#############################################################\n')
+
+    print('Current dir:<%s>' % os.path.dirname(os.path.realpath(__file__)))
     
     # Factory to create peerConnections depending on the iceServers set by user
     pc_factory = PeerConnectionFactory()
