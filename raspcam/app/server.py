@@ -60,7 +60,8 @@ class CameraDevice():
         encode_param = (int(cv2.IMWRITE_JPEG_QUALITY), 95)
         frame = await self.get_latest_frame()
         frame, encimg = cv2.imencode('.jpg', frame, encode_param)
-        cv2.imwrite("frame.jpg", encimg)
+        ret = await cv2.imwrite("frame.jpg", encimg)
+        print("ret : <%s>" % ret)
         return encimg.tostring()
 
 class PeerConnectionFactory():
