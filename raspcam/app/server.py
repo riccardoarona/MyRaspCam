@@ -107,16 +107,16 @@ class RTCVideoStream(VideoStreamTrack):
 
     async def recv(self):
         self.data_bgr = await self.camera_device.get_latest_frame()
+        try:
+            ret = await cv2.imwrite("frame.jpg", self.data_bgr)
+            print(" *** ret write  : <%s>" % ret)
+        except Exception as exc:
+            print("Error: <%s>" % exc)
+        return frame
         frame = VideoFrame.from_ndarray(self.data_bgr, format='bgr24')
         pts, time_base = await self.next_timestamp()
         frame.pts = pts
         frame.time_base = time_base
-        try:
-            ret = await cv2.imwrite("frame.jpg", frame)
-            print(" *** ret write  : <%s>" % ret)
-        except Exception as exc:
-            print("Error: <%s>", exc)
-        return frame
 
 async def index(request):
     content = open(os.path.join(ROOT, 'client/index.html'), 'r').read()
