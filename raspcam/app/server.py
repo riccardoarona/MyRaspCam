@@ -108,7 +108,7 @@ class RTCVideoStream(VideoStreamTrack):
     async def recv(self):
         self.data_bgr = await self.camera_device.get_latest_frame()
         try:
-            ret = await cv2.imwrite("frame.jpg", self.data_bgr)
+            ret = cv2.imwrite("frame.jpg", self.data_bgr)
             print(" *** ret write  : <%s>" % ret)
         except Exception as exc:
             print("Error: <%s>" % exc)
