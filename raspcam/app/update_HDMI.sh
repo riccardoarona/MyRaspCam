@@ -1,4 +1,4 @@
-frame=/usr/src/app/images/frame.jpg
+frame=/usr/src/app/frame.jpg
 log=/usr/src/app/images/log.txt
 # Check active process
 if pgrep fbi; then
