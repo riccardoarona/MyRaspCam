@@ -24,9 +24,6 @@ display_status = [
     D, D, D, D, D, D, D, D
 ]
 
-img_dir = "/usr/src/app/images/"
-frame_name = 
-
 class HDMIThread(object):
     def __init__(self):
         pass
