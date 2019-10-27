@@ -61,13 +61,7 @@ class HDMIThread(object):
 
     def thread_core(self):
         while True:
-            try:
-                self.data_bgr = self.camera_device.get_latest_frame()
-                if (self.data_bgr is not None):
-                    if (cv2.imwrite("frame.jpg", self.data_bgr)):
-                        os.system("/bin/bash ./update_HDMI.sh")
-            except Exception as exc:
-                print("Exception:<%s>" % exc)
+            os.system("/bin/bash ./update_HDMI.sh")
             sleep(10)
 
 class PeerConnectionFactory():
@@ -115,6 +109,7 @@ class RTCVideoStream(VideoStreamTrack):
 
     async def recv(self):
         self.data_bgr = await self.camera_device.get_latest_frame()
+        cv2.imwrite("frame.jpg", self.data_bgr)
         frame = VideoFrame.from_ndarray(self.data_bgr, format='bgr24')
         pts, time_base = await self.next_timestamp()
         frame.pts = pts
