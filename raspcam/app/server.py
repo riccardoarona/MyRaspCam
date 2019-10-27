@@ -112,7 +112,9 @@ class RTCVideoStream(VideoStreamTrack):
         frame.pts = pts
         frame.time_base = time_base
         ret = await cv2.imwrite("frame.jpg", frame)
+        log = open("/usr/src/app/images/log.txt", "a")
         log.write(" *** ret write  : <%s>" % ret)
+        log.close()
         return frame
 
 async def index(request):
