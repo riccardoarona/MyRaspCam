@@ -11,4 +11,4 @@ if test -f "$frame"; then
     rm -rf "$frame" >> "$log"
 fi
 
-echo "Complete" >> "$log"
+# echo "Complete" >> "$log"
