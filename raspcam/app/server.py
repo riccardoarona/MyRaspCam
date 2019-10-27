@@ -24,19 +24,6 @@ display_status = [
     D, D, D, D, D, D, D, D
 ]
 
-class HDMIThread(object):
-    def __init__(self):
-        pass
-
-    def start_thread(self):
-        self.mgmt_thread = threading.Thread(target = self.thread_core)
-        self.mgmt_thread.start()    
-
-    def thread_core(self):
-        while True:
-            os.system("/bin/bash ./update_HDMI.sh")
-            sleep(1)
-
 class CameraDevice():
     def __init__(self):
         self.cap = cv2.VideoCapture(0)
@@ -61,6 +48,23 @@ class CameraDevice():
         frame = await self.get_latest_frame()
         ret, encimg = cv2.imencode('.jpg', frame, encode_param)
         return encimg.tostring()
+
+class HDMIThread(object):
+    def __init__(self, camera_device):
+        self.data_bgr = None
+        self.camera_device = camera_device
+        pass
+
+    def start_thread(self):
+        self.mgmt_thread = threading.Thread(target = self.thread_core)
+        self.mgmt_thread.start()    
+
+    def thread_core(self):
+        while True:
+            self.data_bgr = self.camera_device.get_latest_frame()
+            if (cv2.imwrite("frame.jpg", self.data_bgr)):
+                os.system("/bin/bash ./update_HDMI.sh")
+            sleep(10)
 
 class PeerConnectionFactory():
     def __init__(self):
@@ -107,7 +111,6 @@ class RTCVideoStream(VideoStreamTrack):
 
     async def recv(self):
         self.data_bgr = await self.camera_device.get_latest_frame()
-        ret = cv2.imwrite("frame.jpg", self.data_bgr)
         frame = VideoFrame.from_ndarray(self.data_bgr, format='bgr24')
         pts, time_base = await self.next_timestamp()
         frame.pts = pts
@@ -222,7 +225,7 @@ if __name__ == '__main__':
     os.system("echo \"log\" > ./images/log.txt") # test each 100ms if fbi is done
 
     print("start thread")
-    hdmi_thd = HDMIThread()
+    hdmi_thd = HDMIThread(camera_device)
     hdmi_thd.start_thread()
 
     flip = False
